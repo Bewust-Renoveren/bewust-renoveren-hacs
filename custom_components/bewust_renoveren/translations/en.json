@@ -44,6 +44,8 @@
     "error": {
       "api_key_required": "API key is required.",
       "invalid_endpoint": "Endpoint must start with https://",
+      "invalid_auth": "Invalid API key. Please check your key and try again.",
+      "cannot_connect": "Unable to connect to the endpoint. Check the URL and your network.",
       "room_name_required": "Room name is required.",
       "room_name_duplicate": "A room with this name already exists.",
       "sensor_required": "This sensor is required for each room.",

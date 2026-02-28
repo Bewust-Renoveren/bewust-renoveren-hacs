@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Final
+from typing import Any, Final
 
 DOMAIN: Final = "bewust_renoveren"
 
@@ -33,7 +33,7 @@ PUSH_INTERVALS: Final[list[dict[str, int | str]]] = [
 # Sensor type definitions
 # Each entry: key -> {unit, device_class, domain, name}
 # domain is the HA entity domain (sensor or binary_sensor)
-SENSOR_TYPES: Final[dict[str, dict[str, str]]] = {
+SENSOR_TYPES: Final[dict[str, dict[str, Any]]] = {
     "co2": {
         "unit": "ppm",
         "device_class": "carbon_dioxide",
@@ -78,13 +78,13 @@ SENSOR_TYPES: Final[dict[str, dict[str, str]]] = {
     },
     "window_door": {
         "unit": "boolean",
-        "device_class": "window",
+        "device_class": ["window", "door"],
         "domain": "binary_sensor",
         "name": "Window/Door",
     },
     "occupancy": {
         "unit": "boolean",
-        "device_class": "occupancy",
+        "device_class": ["occupancy", "motion"],
         "domain": "binary_sensor",
         "name": "Occupancy",
     },

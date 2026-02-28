@@ -12,6 +12,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+import aiohttp
 import voluptuous as vol
 
 from homeassistant.config_entries import (
@@ -21,6 +22,7 @@ from homeassistant.config_entries import (
 )
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
     EntitySelector,
     EntitySelectorConfig,
@@ -78,19 +80,53 @@ def _room_schema(defaults: dict[str, Any] | None = None) -> vol.Schema:
 
     # Required sensors
     for stype in REQUIRED_SENSOR_TYPES:
-        info = SENSOR_TYPES[stype]
         schema[
             vol.Required(stype, default=defaults.get(stype, vol.UNDEFINED))
         ] = _entity_selector(stype)
 
     # Optional sensors
     for stype in OPTIONAL_SENSOR_TYPES:
-        info = SENSOR_TYPES[stype]
         schema[
             vol.Optional(stype, default=defaults.get(stype, vol.UNDEFINED))
         ] = _entity_selector(stype)
 
     return vol.Schema(schema)
+
+
+class InvalidAuth(Exception):
+    """Raised when API key is rejected (HTTP 401)."""
+
+
+class CannotConnect(Exception):
+    """Raised when connection to the endpoint fails."""
+
+
+async def _validate_credentials(hass: Any, api_key: str, endpoint: str) -> None:
+    """Test API key against the endpoint.
+
+    Posts a minimal test payload. Any 2xx or 4xx response (except 401) means
+    the endpoint is reachable and the API key is accepted.
+
+    Raises:
+        InvalidAuth: HTTP 401 received — API key is wrong.
+        CannotConnect: Network/connection error — endpoint unreachable.
+    """
+    session = async_get_clientsession(hass)
+    try:
+        async with session.post(
+            endpoint,
+            json={"device_id": "ha_test", "readings": []},
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            timeout=aiohttp.ClientTimeout(total=10),
+        ) as resp:
+            if resp.status == 401:
+                raise InvalidAuth("Invalid API key")
+            # Any other status (200, 400, 422, etc.) means reachable + key accepted
+    except (aiohttp.ClientError, TimeoutError) as err:
+        raise CannotConnect(str(err)) from err
 
 
 def _interval_schema(default: int = DEFAULT_PUSH_INTERVAL) -> vol.Schema:
@@ -129,6 +165,10 @@ class BewustRenoverenConfigFlow(ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Step 1: API key and endpoint URL."""
+        # Prevent adding the integration twice
+        await self.async_set_unique_id(DOMAIN)
+        self._abort_if_unique_id_configured()
+
         errors: dict[str, str] = {}
 
         if user_input is not None:
@@ -140,9 +180,17 @@ class BewustRenoverenConfigFlow(ConfigFlow, domain=DOMAIN):
             elif not endpoint.startswith("https://"):
                 errors[CONF_ENDPOINT] = "invalid_endpoint"
             else:
-                self._api_key = api_key
-                self._endpoint = endpoint
-                return await self.async_step_room_menu()
+                # Validate the API key against the live endpoint
+                try:
+                    await _validate_credentials(self.hass, api_key, endpoint)
+                except InvalidAuth:
+                    errors["base"] = "invalid_auth"
+                except CannotConnect:
+                    errors["base"] = "cannot_connect"
+                else:
+                    self._api_key = api_key
+                    self._endpoint = endpoint
+                    return await self.async_step_room_menu()
 
         return self.async_show_form(
             step_id="user",
@@ -531,7 +579,16 @@ class BewustRenoverenOptionsFlow(OptionsFlowWithConfigEntry):
         )
 
     def _save_options(self) -> FlowResult:
-        """Save all options and update the config entry."""
+        """Save all options and update the config entry.
+
+        Note (I4): This intentionally writes back to entry.data rather than
+        entry.options. The rooms configuration is fundamental to the integration
+        (required for the coordinator to function, not optional tuning), so it
+        belongs in entry.data rather than the optional/overlay entry.options.
+        Both the setup flow and the options flow read from entry.data, which
+        keeps a single source of truth. This is an acceptable Phase 1 design
+        decision; a future migration can move to the standard options pattern.
+        """
         new_data = {
             CONF_API_KEY: self._api_key,
             CONF_ENDPOINT: self._endpoint,

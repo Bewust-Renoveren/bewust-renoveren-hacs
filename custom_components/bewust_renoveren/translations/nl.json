@@ -44,6 +44,8 @@
     "error": {
       "api_key_required": "API-sleutel is verplicht.",
       "invalid_endpoint": "Endpoint moet beginnen met https://",
+      "invalid_auth": "Ongeldige API-sleutel. Controleer je sleutel en probeer opnieuw.",
+      "cannot_connect": "Kan geen verbinding maken met het endpoint. Controleer de URL en je netwerk.",
       "room_name_required": "Naam van de ruimte is verplicht.",
       "room_name_duplicate": "Er bestaat al een ruimte met deze naam.",
       "sensor_required": "Deze sensor is verplicht voor elke ruimte.",

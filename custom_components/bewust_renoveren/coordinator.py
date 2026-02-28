@@ -14,13 +14,14 @@ from __future__ import annotations
 import asyncio
 import collections
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import aiohttp
 
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util.slugify import slugify
 
 from .const import (
@@ -53,8 +54,6 @@ class BewustRenoverenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         rooms: list[dict[str, Any]],
     ) -> None:
         """Initialize the coordinator."""
-        from datetime import timedelta
-
         super().__init__(
             hass,
             _LOGGER,
@@ -64,6 +63,7 @@ class BewustRenoverenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._api_key = api_key
         self._endpoint = endpoint
         self._rooms = rooms
+        self._session = async_get_clientsession(hass)
 
         # State tracking
         self.last_sync: datetime | None = None
@@ -85,8 +85,6 @@ class BewustRenoverenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         rooms: list[dict[str, Any]],
     ) -> None:
         """Update configuration after options flow changes."""
-        from datetime import timedelta
-
         self._api_key = api_key
         self._endpoint = endpoint
         self._rooms = rooms
@@ -98,7 +96,7 @@ class BewustRenoverenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         Returns a dict with status info consumed by sensors.
         """
         now = datetime.now(timezone.utc)
-        timestamp = now.isoformat()
+        timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         # Build payloads for each room
         payloads: list[dict[str, Any]] = []
@@ -239,28 +237,28 @@ class BewustRenoverenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _push_to_cloud(self, payload: dict[str, Any]) -> None:
         """POST a single payload to the cloud endpoint."""
         timeout = aiohttp.ClientTimeout(total=30)
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.post(
-                self._endpoint,
-                json=payload,
-                headers={
-                    "Authorization": f"Bearer {self._api_key}",
-                    "Content-Type": "application/json",
-                },
-            ) as resp:
-                if resp.status != 200:
-                    text = await resp.text()
-                    raise aiohttp.ClientResponseError(
-                        request_info=resp.request_info,
-                        history=resp.history,
-                        status=resp.status,
-                        message=text,
-                    )
-                _LOGGER.debug(
-                    "Push OK for %s: %s",
-                    payload.get("device_id"),
-                    await resp.text(),
+        async with self._session.post(
+            self._endpoint,
+            json=payload,
+            headers={
+                "Authorization": f"Bearer {self._api_key}",
+                "Content-Type": "application/json",
+            },
+            timeout=timeout,
+        ) as resp:
+            if resp.status != 200:
+                text = await resp.text()
+                raise aiohttp.ClientResponseError(
+                    request_info=resp.request_info,
+                    history=resp.history,
+                    status=resp.status,
+                    message=text,
                 )
+            _LOGGER.debug(
+                "Push OK for %s: %s",
+                payload.get("device_id"),
+                await resp.text(),
+            )
 
     def _build_result(self) -> dict[str, Any]:
         """Build the result dict exposed to sensors."""
