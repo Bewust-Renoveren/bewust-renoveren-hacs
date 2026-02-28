@@ -8,9 +8,7 @@ DOMAIN: Final = "bewust_renoveren"
 
 # Defaults
 DEFAULT_PUSH_INTERVAL: Final = 300  # 5 minutes in seconds
-DEFAULT_ENDPOINT: Final = (
-    "https://europe-west1-bewust-renoveren.cloudfunctions.net/ingest"
-)
+DEFAULT_ENDPOINT: Final = "https://ingest-e3prasv6sq-ew.a.run.app"
 
 # Config keys
 CONF_API_KEY: Final = "api_key"
