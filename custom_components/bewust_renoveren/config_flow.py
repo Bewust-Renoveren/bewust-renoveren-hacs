@@ -18,10 +18,10 @@ import voluptuous as vol
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
-    OptionsFlowWithConfigEntry,
+    ConfigFlowResult,
+    OptionsFlow,
 )
 from homeassistant.core import callback
-from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
     EntitySelector,
@@ -58,10 +58,20 @@ _LOGGER = logging.getLogger(__name__)
 def _entity_selector(sensor_type: str) -> EntitySelector:
     """Build an entity selector filtered by device_class for a sensor type."""
     info = SENSOR_TYPES[sensor_type]
+    device_class = info["device_class"]
+    # EntitySelectorConfig expects a single string or list; for types with
+    # multiple device_classes (e.g. window_door), just filter by domain only
+    if isinstance(device_class, list):
+        return EntitySelector(
+            EntitySelectorConfig(
+                domain=info["domain"],
+                multiple=False,
+            )
+        )
     return EntitySelector(
         EntitySelectorConfig(
             domain=info["domain"],
-            device_class=info["device_class"],
+            device_class=device_class,
             multiple=False,
         )
     )
@@ -163,7 +173,7 @@ class BewustRenoverenConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Step 1: API key and endpoint URL."""
         # Prevent adding the integration twice
         await self.async_set_unique_id(DOMAIN)
@@ -211,7 +221,7 @@ class BewustRenoverenConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def async_step_room_menu(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Menu: add another room or finish."""
         if user_input is not None:
             action = user_input.get("next_step")
@@ -252,7 +262,7 @@ class BewustRenoverenConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def async_step_add_room(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Add a single room with entity mappings."""
         errors: dict[str, str] = {}
 
@@ -306,7 +316,7 @@ class BewustRenoverenConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def async_step_interval(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Step: Select push interval, then create entry."""
         if user_input is not None:
             self._push_interval = int(user_input[CONF_PUSH_INTERVAL])
@@ -317,7 +327,7 @@ class BewustRenoverenConfigFlow(ConfigFlow, domain=DOMAIN):
             data_schema=_interval_schema(),
         )
 
-    def _create_entry(self) -> FlowResult:
+    def _create_entry(self) -> ConfigFlowResult:
         """Create the config entry."""
         title = f"Bewust Renoveren ({len(self._rooms)} rooms)"
         return self.async_create_entry(
@@ -336,31 +346,34 @@ class BewustRenoverenConfigFlow(ConfigFlow, domain=DOMAIN):
         config_entry: ConfigEntry,
     ) -> BewustRenoverenOptionsFlow:
         """Get the options flow handler."""
-        return BewustRenoverenOptionsFlow(config_entry)
+        return BewustRenoverenOptionsFlow()
 
 
-class BewustRenoverenOptionsFlow(OptionsFlowWithConfigEntry):
+class BewustRenoverenOptionsFlow(OptionsFlow):
     """Handle options flow for reconfiguration.
 
     Allows changing API key, endpoint, rooms, and push interval.
     """
 
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        """Initialize options flow."""
-        super().__init__(config_entry)
-        self._api_key: str = config_entry.data.get(CONF_API_KEY, "")
-        self._endpoint: str = config_entry.data.get(CONF_ENDPOINT, DEFAULT_ENDPOINT)
-        self._rooms: list[dict[str, Any]] = list(
-            config_entry.data.get(CONF_ROOMS, [])
-        )
-        self._push_interval: int = config_entry.data.get(
-            CONF_PUSH_INTERVAL, DEFAULT_PUSH_INTERVAL
-        )
+    _api_key: str
+    _endpoint: str
+    _rooms: list[dict[str, Any]]
+    _push_interval: int
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Main options menu."""
+        # Load current config on first call
+        if not hasattr(self, "_initialized"):
+            self._api_key = self.config_entry.data.get(CONF_API_KEY, "")
+            self._endpoint = self.config_entry.data.get(CONF_ENDPOINT, DEFAULT_ENDPOINT)
+            self._rooms = list(self.config_entry.data.get(CONF_ROOMS, []))
+            self._push_interval = self.config_entry.data.get(
+                CONF_PUSH_INTERVAL, DEFAULT_PUSH_INTERVAL
+            )
+            self._initialized = True
+
         if user_input is not None:
             action = user_input.get("next_step")
             if action == "credentials":
@@ -399,7 +412,7 @@ class BewustRenoverenOptionsFlow(OptionsFlowWithConfigEntry):
 
     async def async_step_credentials(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Change API key and endpoint."""
         errors: dict[str, str] = {}
 
@@ -437,7 +450,7 @@ class BewustRenoverenOptionsFlow(OptionsFlowWithConfigEntry):
 
     async def async_step_options_room_menu(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Room management menu in options flow."""
         if user_input is not None:
             action = user_input.get("next_step")
@@ -482,7 +495,7 @@ class BewustRenoverenOptionsFlow(OptionsFlowWithConfigEntry):
 
     async def async_step_options_add_room(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Add a room in options flow."""
         errors: dict[str, str] = {}
 
@@ -533,7 +546,7 @@ class BewustRenoverenOptionsFlow(OptionsFlowWithConfigEntry):
 
     async def async_step_remove_room(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Remove a room."""
         if user_input is not None:
             room_slug = user_input.get("room_to_remove")
@@ -567,7 +580,7 @@ class BewustRenoverenOptionsFlow(OptionsFlowWithConfigEntry):
 
     async def async_step_options_interval(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Change push interval in options flow."""
         if user_input is not None:
             self._push_interval = int(user_input[CONF_PUSH_INTERVAL])
@@ -578,7 +591,7 @@ class BewustRenoverenOptionsFlow(OptionsFlowWithConfigEntry):
             data_schema=_interval_schema(default=self._push_interval),
         )
 
-    def _save_options(self) -> FlowResult:
+    def _save_options(self) -> ConfigFlowResult:
         """Save all options and update the config entry.
 
         Note (I4): This intentionally writes back to entry.data rather than
