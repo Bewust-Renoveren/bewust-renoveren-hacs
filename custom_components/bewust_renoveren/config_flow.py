@@ -34,7 +34,7 @@ from homeassistant.helpers.selector import (
     TextSelectorConfig,
     TextSelectorType,
 )
-from homeassistant.util.slugify import slugify
+from slugify import slugify
 
 from .const import (
     CONF_API_KEY,
