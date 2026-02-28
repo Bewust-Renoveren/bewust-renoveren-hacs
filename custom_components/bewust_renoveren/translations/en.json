@@ -1,0 +1,131 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Bewust Renoveren",
+        "description": "Enter your API key from the Bewust Renoveren web portal and the cloud endpoint URL.",
+        "data": {
+          "api_key": "API Key",
+          "endpoint": "Cloud Endpoint URL"
+        }
+      },
+      "room_menu": {
+        "title": "Room Setup",
+        "description": "You have configured {room_count} room(s): {room_names}.\nAdd rooms to map your sensors. Each room needs at least CO2, temperature, and humidity sensors.",
+        "data": {
+          "next_step": "What would you like to do?"
+        }
+      },
+      "add_room": {
+        "title": "Add Room",
+        "description": "Configure sensors for this room. CO2, temperature, and humidity are required.",
+        "data": {
+          "name": "Room Name",
+          "co2": "CO2 Sensor",
+          "temperature": "Temperature Sensor",
+          "humidity": "Humidity Sensor",
+          "pressure": "Pressure Sensor (optional)",
+          "pm25": "PM2.5 Sensor (optional)",
+          "pm10": "PM10 Sensor (optional)",
+          "tvoc": "TVOC Sensor (optional)",
+          "window_door": "Window/Door Sensor (optional)",
+          "occupancy": "Occupancy Sensor (optional)",
+          "energy": "Energy Meter (optional)"
+        }
+      },
+      "interval": {
+        "title": "Push Interval",
+        "description": "How often should sensor data be sent to the cloud?",
+        "data": {
+          "push_interval": "Push Interval"
+        }
+      }
+    },
+    "error": {
+      "api_key_required": "API key is required.",
+      "invalid_endpoint": "Endpoint must start with https://",
+      "room_name_required": "Room name is required.",
+      "room_name_duplicate": "A room with this name already exists.",
+      "sensor_required": "This sensor is required for each room.",
+      "entity_already_mapped": "This entity is already mapped in another room."
+    },
+    "abort": {
+      "already_configured": "Bewust Renoveren is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Bewust Renoveren Settings",
+        "description": "Choose what you want to configure.",
+        "data": {
+          "next_step": "Configuration section"
+        }
+      },
+      "credentials": {
+        "title": "API Credentials",
+        "description": "Update your API key and cloud endpoint.",
+        "data": {
+          "api_key": "API Key",
+          "endpoint": "Cloud Endpoint URL"
+        }
+      },
+      "options_room_menu": {
+        "title": "Manage Rooms",
+        "description": "You have {room_count} room(s): {room_names}.",
+        "data": {
+          "next_step": "What would you like to do?"
+        }
+      },
+      "options_add_room": {
+        "title": "Add Room",
+        "description": "Configure sensors for this room. CO2, temperature, and humidity are required.",
+        "data": {
+          "name": "Room Name",
+          "co2": "CO2 Sensor",
+          "temperature": "Temperature Sensor",
+          "humidity": "Humidity Sensor",
+          "pressure": "Pressure Sensor (optional)",
+          "pm25": "PM2.5 Sensor (optional)",
+          "pm10": "PM10 Sensor (optional)",
+          "tvoc": "TVOC Sensor (optional)",
+          "window_door": "Window/Door Sensor (optional)",
+          "occupancy": "Occupancy Sensor (optional)",
+          "energy": "Energy Meter (optional)"
+        }
+      },
+      "remove_room": {
+        "title": "Remove Room",
+        "description": "Select the room to remove.",
+        "data": {
+          "room_to_remove": "Room to remove"
+        }
+      },
+      "options_interval": {
+        "title": "Push Interval",
+        "description": "How often should sensor data be sent to the cloud?",
+        "data": {
+          "push_interval": "Push Interval"
+        }
+      }
+    },
+    "error": {
+      "api_key_required": "API key is required.",
+      "invalid_endpoint": "Endpoint must start with https://",
+      "room_name_required": "Room name is required.",
+      "room_name_duplicate": "A room with this name already exists.",
+      "sensor_required": "This sensor is required for each room.",
+      "entity_already_mapped": "This entity is already mapped in another room."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "status": {
+        "name": "Status"
+      },
+      "last_sync": {
+        "name": "Last Sync"
+      }
+    }
+  }
+}
