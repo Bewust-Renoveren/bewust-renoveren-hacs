@@ -94,11 +94,13 @@ SENSOR_TYPES: Final[dict[str, dict[str, Any]]] = {
     },
 }
 
-# Required sensor types per room (must be mapped for a valid room)
-REQUIRED_SENSOR_TYPES: Final[list[str]] = ["co2", "temperature", "humidity"]
+# All sensor types are optional — map whatever sensors you have per room
+REQUIRED_SENSOR_TYPES: Final[list[str]] = []
 
-# Optional sensor types per room
 OPTIONAL_SENSOR_TYPES: Final[list[str]] = [
+    "co2",
+    "temperature",
+    "humidity",
     "pressure",
     "pm25",
     "pm10",

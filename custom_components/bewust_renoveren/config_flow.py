@@ -277,11 +277,6 @@ class BewustRenoverenConfigFlow(ConfigFlow, domain=DOMAIN):
                 if slugify(room_name) in existing_slugs:
                     errors[CONF_ROOM_NAME] = "room_name_duplicate"
 
-            # Check required sensors are provided
-            for stype in REQUIRED_SENSOR_TYPES:
-                if not user_input.get(stype):
-                    errors[stype] = "sensor_required"
-
             if not errors:
                 # Check for duplicate entity assignments across all rooms
                 all_entities: set[str] = set()
@@ -298,6 +293,10 @@ class BewustRenoverenConfigFlow(ConfigFlow, domain=DOMAIN):
                         else:
                             new_entities[stype] = entity_id
                             all_entities.add(entity_id)
+
+                # Require at least one sensor per room
+                if not new_entities:
+                    errors["base"] = "no_sensors_selected"
 
             if not errors:
                 self._rooms.append(
@@ -509,10 +508,6 @@ class BewustRenoverenOptionsFlow(OptionsFlow):
                 if slugify(room_name) in existing_slugs:
                     errors[CONF_ROOM_NAME] = "room_name_duplicate"
 
-            for stype in REQUIRED_SENSOR_TYPES:
-                if not user_input.get(stype):
-                    errors[stype] = "sensor_required"
-
             if not errors:
                 all_entities: set[str] = set()
                 for room in self._rooms:
@@ -528,6 +523,9 @@ class BewustRenoverenOptionsFlow(OptionsFlow):
                         else:
                             new_entities[stype] = entity_id
                             all_entities.add(entity_id)
+
+                if not new_entities:
+                    errors["base"] = "no_sensors_selected"
 
             if not errors:
                 self._rooms.append(

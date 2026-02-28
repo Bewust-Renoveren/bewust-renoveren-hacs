@@ -11,19 +11,19 @@
       },
       "room_menu": {
         "title": "Room Setup",
-        "description": "You have configured {room_count} room(s): {room_names}.\nAdd rooms to map your sensors. Each room needs at least CO2, temperature, and humidity sensors.",
+        "description": "You have configured {room_count} room(s): {room_names}.\nAdd rooms and map whatever sensors you have available.",
         "data": {
           "next_step": "What would you like to do?"
         }
       },
       "add_room": {
         "title": "Add Room",
-        "description": "Configure sensors for this room. CO2, temperature, and humidity are required.",
+        "description": "Configure sensors for this room. Select at least one sensor.",
         "data": {
           "name": "Room Name",
-          "co2": "CO2 Sensor",
-          "temperature": "Temperature Sensor",
-          "humidity": "Humidity Sensor",
+          "co2": "CO2 Sensor (optional)",
+          "temperature": "Temperature Sensor (optional)",
+          "humidity": "Humidity Sensor (optional)",
           "pressure": "Pressure Sensor (optional)",
           "pm25": "PM2.5 Sensor (optional)",
           "pm10": "PM10 Sensor (optional)",
@@ -49,7 +49,8 @@
       "room_name_required": "Room name is required.",
       "room_name_duplicate": "A room with this name already exists.",
       "sensor_required": "This sensor is required for each room.",
-      "entity_already_mapped": "This entity is already mapped in another room."
+      "entity_already_mapped": "This entity is already mapped in another room.",
+      "no_sensors_selected": "Select at least one sensor for this room."
     },
     "abort": {
       "already_configured": "Bewust Renoveren is already configured."
@@ -81,12 +82,12 @@
       },
       "options_add_room": {
         "title": "Add Room",
-        "description": "Configure sensors for this room. CO2, temperature, and humidity are required.",
+        "description": "Configure sensors for this room. Select at least one sensor.",
         "data": {
           "name": "Room Name",
-          "co2": "CO2 Sensor",
-          "temperature": "Temperature Sensor",
-          "humidity": "Humidity Sensor",
+          "co2": "CO2 Sensor (optional)",
+          "temperature": "Temperature Sensor (optional)",
+          "humidity": "Humidity Sensor (optional)",
           "pressure": "Pressure Sensor (optional)",
           "pm25": "PM2.5 Sensor (optional)",
           "pm10": "PM10 Sensor (optional)",
@@ -117,7 +118,8 @@
       "room_name_required": "Room name is required.",
       "room_name_duplicate": "A room with this name already exists.",
       "sensor_required": "This sensor is required for each room.",
-      "entity_already_mapped": "This entity is already mapped in another room."
+      "entity_already_mapped": "This entity is already mapped in another room.",
+      "no_sensors_selected": "Select at least one sensor for this room."
     }
   },
   "entity": {
