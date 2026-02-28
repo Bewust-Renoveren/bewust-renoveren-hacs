@@ -8,6 +8,7 @@ Exposes two diagnostic sensors:
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -148,7 +149,11 @@ class BewustRenoverenLastSyncSensor(BewustRenoverenBaseSensor):
         self.async_write_ha_state()
 
     @property
-    def native_value(self) -> str | None:
-        """Return the ISO timestamp of last successful sync."""
-        data = self.coordinator.data or {}
-        return data.get("last_sync")
+    def native_value(self) -> datetime | None:
+        """Return the datetime of last successful sync.
+
+        HA's SensorDeviceClass.TIMESTAMP requires a datetime object.
+        """
+        if self.coordinator.last_sync is not None:
+            return self.coordinator.last_sync
+        return None
