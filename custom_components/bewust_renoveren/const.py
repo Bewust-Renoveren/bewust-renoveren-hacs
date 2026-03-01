@@ -14,9 +14,7 @@ DEFAULT_ENDPOINT: Final = "https://ingest-e3prasv6sq-ew.a.run.app"
 CONF_API_KEY: Final = "api_key"
 CONF_ENDPOINT: Final = "endpoint"
 CONF_PUSH_INTERVAL: Final = "push_interval"
-CONF_ROOMS: Final = "rooms"
-CONF_ROOM_NAME: Final = "name"
-CONF_ROOM_ENTITIES: Final = "entities"
+
 
 # Push interval options: value in seconds
 PUSH_INTERVALS: Final[list[dict[str, int | str]]] = [
@@ -27,6 +25,40 @@ PUSH_INTERVALS: Final[list[dict[str, int | str]]] = [
     {"value": 900, "label": "15 minutes"},
     {"value": 1800, "label": "30 minutes"},
 ]
+
+# Supported device classes for auto-discovery
+SUPPORTED_DEVICE_CLASSES: Final[set[str]] = {
+    "temperature",
+    "humidity",
+    "carbon_dioxide",
+    "atmospheric_pressure",
+    "pm25",
+    "pm10",
+    "volatile_organic_compounds",
+    "energy",
+    "power",
+    "window",
+    "door",
+    "occupancy",
+    "motion",
+}
+
+# Mapping from HA device_class to our canonical sensor type name
+DEVICE_CLASS_TO_TYPE: Final[dict[str, str]] = {
+    "temperature": "temperature",
+    "humidity": "humidity",
+    "carbon_dioxide": "co2",
+    "atmospheric_pressure": "pressure",
+    "pm25": "pm25",
+    "pm10": "pm10",
+    "volatile_organic_compounds": "voc",
+    "energy": "energy",
+    "power": "power",
+    "window": "window",
+    "door": "door",
+    "occupancy": "occupancy",
+    "motion": "motion",
+}
 
 # Sensor type definitions
 # Each entry: key -> {unit, device_class, domain, name}
@@ -57,34 +89,22 @@ SENSOR_TYPES: Final[dict[str, dict[str, Any]]] = {
         "name": "Pressure",
     },
     "pm25": {
-        "unit": "µg/m³",
+        "unit": "ug/m3",
         "device_class": "pm25",
         "domain": "sensor",
         "name": "PM2.5",
     },
     "pm10": {
-        "unit": "µg/m³",
+        "unit": "ug/m3",
         "device_class": "pm10",
         "domain": "sensor",
         "name": "PM10",
     },
-    "tvoc": {
+    "voc": {
         "unit": "index",
         "device_class": "volatile_organic_compounds",
         "domain": "sensor",
-        "name": "TVOC",
-    },
-    "window_door": {
-        "unit": "boolean",
-        "device_class": ["window", "door"],
-        "domain": "binary_sensor",
-        "name": "Window/Door",
-    },
-    "occupancy": {
-        "unit": "boolean",
-        "device_class": ["occupancy", "motion"],
-        "domain": "binary_sensor",
-        "name": "Occupancy",
+        "name": "VOC",
     },
     "energy": {
         "unit": "kWh",
@@ -92,23 +112,37 @@ SENSOR_TYPES: Final[dict[str, dict[str, Any]]] = {
         "domain": "sensor",
         "name": "Energy",
     },
+    "power": {
+        "unit": "W",
+        "device_class": "power",
+        "domain": "sensor",
+        "name": "Power",
+    },
+    "window": {
+        "unit": "boolean",
+        "device_class": "window",
+        "domain": "binary_sensor",
+        "name": "Window",
+    },
+    "door": {
+        "unit": "boolean",
+        "device_class": "door",
+        "domain": "binary_sensor",
+        "name": "Door",
+    },
+    "occupancy": {
+        "unit": "boolean",
+        "device_class": "occupancy",
+        "domain": "binary_sensor",
+        "name": "Occupancy",
+    },
+    "motion": {
+        "unit": "boolean",
+        "device_class": "motion",
+        "domain": "binary_sensor",
+        "name": "Motion",
+    },
 }
-
-# All sensor types are optional — map whatever sensors you have per room
-REQUIRED_SENSOR_TYPES: Final[list[str]] = []
-
-OPTIONAL_SENSOR_TYPES: Final[list[str]] = [
-    "co2",
-    "temperature",
-    "humidity",
-    "pressure",
-    "pm25",
-    "pm10",
-    "tvoc",
-    "window_door",
-    "occupancy",
-    "energy",
-]
 
 # Coordinator retry settings
 MAX_RETRIES: Final = 3

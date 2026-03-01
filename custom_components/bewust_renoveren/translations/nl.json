@@ -3,34 +3,10 @@
     "step": {
       "user": {
         "title": "Verbinden met Bewust Renoveren",
-        "description": "Voer je API-sleutel in van het Bewust Renoveren webportaal en de cloud endpoint URL.",
+        "description": "Voer je API-sleutel in van het Bewust Renoveren webportaal en de cloud endpoint URL.\n\nSensoren worden automatisch ontdekt -- handmatige ruimte-indeling is niet nodig.",
         "data": {
           "api_key": "API-sleutel",
           "endpoint": "Cloud Endpoint URL"
-        }
-      },
-      "room_menu": {
-        "title": "Ruimtes instellen",
-        "description": "Je hebt {room_count} ruimte(s) geconfigureerd: {room_names}.\nVoeg ruimtes toe om je sensoren te koppelen. Elke ruimte heeft minstens een CO2-, temperatuur- en vochtigheidssensor nodig.",
-        "data": {
-          "next_step": "Wat wil je doen?"
-        }
-      },
-      "add_room": {
-        "title": "Ruimte toevoegen",
-        "description": "Configureer sensoren voor deze ruimte. CO2, temperatuur en vochtigheid zijn verplicht.",
-        "data": {
-          "name": "Naam van de ruimte",
-          "co2": "CO2-sensor",
-          "temperature": "Temperatuursensor",
-          "humidity": "Vochtigheidssensor",
-          "pressure": "Druksensor (optioneel)",
-          "pm25": "PM2.5-sensor (optioneel)",
-          "pm10": "PM10-sensor (optioneel)",
-          "tvoc": "TVOC-sensor (optioneel)",
-          "window_door": "Raam-/deursensor (optioneel)",
-          "occupancy": "Aanwezigheidssensor (optioneel)",
-          "energy": "Energiemeter (optioneel)"
         }
       },
       "interval": {
@@ -45,11 +21,7 @@
       "api_key_required": "API-sleutel is verplicht.",
       "invalid_endpoint": "Endpoint moet beginnen met https://",
       "invalid_auth": "Ongeldige API-sleutel. Controleer je sleutel en probeer opnieuw.",
-      "cannot_connect": "Kan geen verbinding maken met het endpoint. Controleer de URL en je netwerk.",
-      "room_name_required": "Naam van de ruimte is verplicht.",
-      "room_name_duplicate": "Er bestaat al een ruimte met deze naam.",
-      "sensor_required": "Deze sensor is verplicht voor elke ruimte.",
-      "entity_already_mapped": "Deze entiteit is al gekoppeld in een andere ruimte."
+      "cannot_connect": "Kan geen verbinding maken met het endpoint. Controleer de URL en je netwerk."
     },
     "abort": {
       "already_configured": "Bewust Renoveren is al geconfigureerd."
@@ -72,37 +44,6 @@
           "endpoint": "Cloud Endpoint URL"
         }
       },
-      "options_room_menu": {
-        "title": "Ruimtes beheren",
-        "description": "Je hebt {room_count} ruimte(s): {room_names}.",
-        "data": {
-          "next_step": "Wat wil je doen?"
-        }
-      },
-      "options_add_room": {
-        "title": "Ruimte toevoegen",
-        "description": "Configureer sensoren voor deze ruimte. CO2, temperatuur en vochtigheid zijn verplicht.",
-        "data": {
-          "name": "Naam van de ruimte",
-          "co2": "CO2-sensor",
-          "temperature": "Temperatuursensor",
-          "humidity": "Vochtigheidssensor",
-          "pressure": "Druksensor (optioneel)",
-          "pm25": "PM2.5-sensor (optioneel)",
-          "pm10": "PM10-sensor (optioneel)",
-          "tvoc": "TVOC-sensor (optioneel)",
-          "window_door": "Raam-/deursensor (optioneel)",
-          "occupancy": "Aanwezigheidssensor (optioneel)",
-          "energy": "Energiemeter (optioneel)"
-        }
-      },
-      "remove_room": {
-        "title": "Ruimte verwijderen",
-        "description": "Selecteer de ruimte die je wilt verwijderen.",
-        "data": {
-          "room_to_remove": "Te verwijderen ruimte"
-        }
-      },
       "options_interval": {
         "title": "Verzendinterval",
         "description": "Hoe vaak moeten sensorgegevens naar de cloud worden verstuurd?",
@@ -114,10 +55,8 @@
     "error": {
       "api_key_required": "API-sleutel is verplicht.",
       "invalid_endpoint": "Endpoint moet beginnen met https://",
-      "room_name_required": "Naam van de ruimte is verplicht.",
-      "room_name_duplicate": "Er bestaat al een ruimte met deze naam.",
-      "sensor_required": "Deze sensor is verplicht voor elke ruimte.",
-      "entity_already_mapped": "Deze entiteit is al gekoppeld in een andere ruimte."
+      "invalid_auth": "Ongeldige API-sleutel. Controleer je sleutel en probeer opnieuw.",
+      "cannot_connect": "Kan geen verbinding maken met het endpoint. Controleer de URL en je netwerk."
     }
   },
   "entity": {

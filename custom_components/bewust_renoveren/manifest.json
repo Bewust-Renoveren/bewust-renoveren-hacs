@@ -1,12 +1,12 @@
 {
   "domain": "bewust_renoveren",
   "name": "Bewust Renoveren",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "codeowners": ["@Bewust-Renoveren"],
   "config_flow": true,
   "documentation": "https://github.com/Bewust-Renoveren/bewust-renoveren-hacs",
   "iot_class": "cloud_push",
   "issue_tracker": "https://github.com/Bewust-Renoveren/bewust-renoveren-hacs/issues",
-  "requirements": ["aiohttp>=3.8.0", "python-slugify>=8.0.0"],
+  "requirements": ["aiohttp>=3.8.0"],
   "integration_type": "hub"
 }

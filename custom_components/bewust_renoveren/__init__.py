@@ -2,6 +2,8 @@
 
 Monitors indoor air quality and moisture levels, pushing sensor data
 to the Bewust Renoveren cloud platform for analysis and early warnings.
+
+Auto-discovers sensors by device_class -- no manual room mapping required.
 """
 
 from __future__ import annotations
@@ -16,7 +18,6 @@ from .const import (
     CONF_API_KEY,
     CONF_ENDPOINT,
     CONF_PUSH_INTERVAL,
-    CONF_ROOMS,
     DEFAULT_ENDPOINT,
     DEFAULT_PUSH_INTERVAL,
     DOMAIN,
@@ -28,6 +29,26 @@ _LOGGER = logging.getLogger(__name__)
 PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+    """Migrate old config entry to new version.
+
+    Version 1 -> 2: Remove 'rooms' key (auto-discovery replaces manual mapping).
+    """
+    if config_entry.version == 1:
+        _LOGGER.info(
+            "Migrating Bewust Renoveren config entry from version %d to 2",
+            config_entry.version,
+        )
+        new_data = {k: v for k, v in config_entry.data.items() if k != "rooms"}
+        hass.config_entries.async_update_entry(
+            config_entry, data=new_data, version=2
+        )
+        _LOGGER.info(
+            "Migration to version 2 complete (removed rooms, auto-discovery enabled)"
+        )
+    return True
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Bewust Renoveren from a config entry."""
     hass.data.setdefault(DOMAIN, {})
@@ -37,7 +58,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         api_key=entry.data[CONF_API_KEY],
         endpoint=entry.data.get(CONF_ENDPOINT, DEFAULT_ENDPOINT),
         push_interval=entry.data.get(CONF_PUSH_INTERVAL, DEFAULT_PUSH_INTERVAL),
-        rooms=entry.data.get(CONF_ROOMS, []),
     )
 
     # Do an initial data push
@@ -51,8 +71,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
 
     _LOGGER.info(
-        "Bewust Renoveren integration set up with %d room(s)",
-        len(entry.data.get(CONF_ROOMS, [])),
+        "Bewust Renoveren integration set up (auto-discovery mode, "
+        "discovered %d sensor(s))",
+        coordinator.discovered_count,
     )
     return True
 
@@ -66,7 +87,6 @@ async def _async_update_listener(
         api_key=entry.data[CONF_API_KEY],
         endpoint=entry.data.get(CONF_ENDPOINT, DEFAULT_ENDPOINT),
         push_interval=entry.data.get(CONF_PUSH_INTERVAL, DEFAULT_PUSH_INTERVAL),
-        rooms=entry.data.get(CONF_ROOMS, []),
     )
     await coordinator.async_request_refresh()
     _LOGGER.info("Bewust Renoveren configuration updated")

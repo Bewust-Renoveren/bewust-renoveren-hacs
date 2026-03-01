@@ -3,34 +3,10 @@
     "step": {
       "user": {
         "title": "Connect to Bewust Renoveren",
-        "description": "Enter your API key from the Bewust Renoveren web portal and the cloud endpoint URL.",
+        "description": "Enter your API key from the Bewust Renoveren web portal and the cloud endpoint URL.\n\nSensors will be auto-discovered -- no manual room mapping required.",
         "data": {
           "api_key": "API Key",
           "endpoint": "Cloud Endpoint URL"
-        }
-      },
-      "room_menu": {
-        "title": "Room Setup",
-        "description": "You have configured {room_count} room(s): {room_names}.\nAdd rooms to map your sensors. Each room needs at least CO2, temperature, and humidity sensors.",
-        "data": {
-          "next_step": "What would you like to do?"
-        }
-      },
-      "add_room": {
-        "title": "Add Room",
-        "description": "Configure sensors for this room. CO2, temperature, and humidity are required.",
-        "data": {
-          "name": "Room Name",
-          "co2": "CO2 Sensor",
-          "temperature": "Temperature Sensor",
-          "humidity": "Humidity Sensor",
-          "pressure": "Pressure Sensor (optional)",
-          "pm25": "PM2.5 Sensor (optional)",
-          "pm10": "PM10 Sensor (optional)",
-          "tvoc": "TVOC Sensor (optional)",
-          "window_door": "Window/Door Sensor (optional)",
-          "occupancy": "Occupancy Sensor (optional)",
-          "energy": "Energy Meter (optional)"
         }
       },
       "interval": {
@@ -45,11 +21,7 @@
       "api_key_required": "API key is required.",
       "invalid_endpoint": "Endpoint must start with https://",
       "invalid_auth": "Invalid API key. Please check your key and try again.",
-      "cannot_connect": "Unable to connect to the endpoint. Check the URL and your network.",
-      "room_name_required": "Room name is required.",
-      "room_name_duplicate": "A room with this name already exists.",
-      "sensor_required": "This sensor is required for each room.",
-      "entity_already_mapped": "This entity is already mapped in another room."
+      "cannot_connect": "Unable to connect to the endpoint. Check the URL and your network."
     },
     "abort": {
       "already_configured": "Bewust Renoveren is already configured."
@@ -72,37 +44,6 @@
           "endpoint": "Cloud Endpoint URL"
         }
       },
-      "options_room_menu": {
-        "title": "Manage Rooms",
-        "description": "You have {room_count} room(s): {room_names}.",
-        "data": {
-          "next_step": "What would you like to do?"
-        }
-      },
-      "options_add_room": {
-        "title": "Add Room",
-        "description": "Configure sensors for this room. CO2, temperature, and humidity are required.",
-        "data": {
-          "name": "Room Name",
-          "co2": "CO2 Sensor",
-          "temperature": "Temperature Sensor",
-          "humidity": "Humidity Sensor",
-          "pressure": "Pressure Sensor (optional)",
-          "pm25": "PM2.5 Sensor (optional)",
-          "pm10": "PM10 Sensor (optional)",
-          "tvoc": "TVOC Sensor (optional)",
-          "window_door": "Window/Door Sensor (optional)",
-          "occupancy": "Occupancy Sensor (optional)",
-          "energy": "Energy Meter (optional)"
-        }
-      },
-      "remove_room": {
-        "title": "Remove Room",
-        "description": "Select the room to remove.",
-        "data": {
-          "room_to_remove": "Room to remove"
-        }
-      },
       "options_interval": {
         "title": "Push Interval",
         "description": "How often should sensor data be sent to the cloud?",
@@ -114,10 +55,8 @@
     "error": {
       "api_key_required": "API key is required.",
       "invalid_endpoint": "Endpoint must start with https://",
-      "room_name_required": "Room name is required.",
-      "room_name_duplicate": "A room with this name already exists.",
-      "sensor_required": "This sensor is required for each room.",
-      "entity_already_mapped": "This entity is already mapped in another room."
+      "invalid_auth": "Invalid API key. Please check your key and try again.",
+      "cannot_connect": "Unable to connect to the endpoint. Check the URL and your network."
     }
   },
   "entity": {
