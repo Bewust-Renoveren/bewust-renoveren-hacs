@@ -110,7 +110,7 @@ class BewustRenoverenConfigFlow(ConfigFlow, domain=DOMAIN):
       2. Push interval selection
     """
 
-    VERSION = 2
+    VERSION = 3
 
     def __init__(self) -> None:
         """Initialize the config flow."""

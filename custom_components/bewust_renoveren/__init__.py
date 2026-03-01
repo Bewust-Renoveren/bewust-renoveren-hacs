@@ -30,22 +30,34 @@ PLATFORMS: list[Platform] = [Platform.SENSOR]
 
 
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
-    """Migrate old config entry to new version.
+    """Migrate old config entry to current version.
 
-    Version 1 -> 2: Remove 'rooms' key (auto-discovery replaces manual mapping).
+    Version 1 -> 3: Remove 'rooms' key, update endpoint to hosting URL.
+    Version 2 -> 3: Update endpoint to hosting URL (rooms already removed).
     """
-    if config_entry.version == 1:
+    new_data = dict(config_entry.data)
+
+    if config_entry.version < 3:
         _LOGGER.info(
-            "Migrating Bewust Renoveren config entry from version %d to 2",
+            "Migrating Bewust Renoveren config entry from version %d to 3",
             config_entry.version,
         )
-        new_data = {k: v for k, v in config_entry.data.items() if k != "rooms"}
+        # v1: strip rooms
+        if config_entry.version == 1:
+            new_data = {k: v for k, v in new_data.items() if k != "rooms"}
+
+        # v1+v2: update old Cloud Run endpoint to hosting URL
+        old_endpoint = new_data.get(CONF_ENDPOINT, "")
+        if "ingest-" in old_endpoint and ".a.run.app" in old_endpoint:
+            new_data[CONF_ENDPOINT] = DEFAULT_ENDPOINT
+            _LOGGER.info(
+                "Migrated endpoint from %s to %s", old_endpoint, DEFAULT_ENDPOINT
+            )
+
         hass.config_entries.async_update_entry(
-            config_entry, data=new_data, version=2
+            config_entry, data=new_data, version=3
         )
-        _LOGGER.info(
-            "Migration to version 2 complete (removed rooms, auto-discovery enabled)"
-        )
+        _LOGGER.info("Migration to version 3 complete")
     return True
 
 
