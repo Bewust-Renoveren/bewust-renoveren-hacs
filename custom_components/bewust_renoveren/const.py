@@ -7,22 +7,35 @@ from typing import Any, Final
 DOMAIN: Final = "bewust_renoveren"
 
 # Defaults
-DEFAULT_PUSH_INTERVAL: Final = 300  # 5 minutes in seconds
-DEFAULT_ENDPOINT: Final = "https://bewust-renoveren.web.app"
+DEFAULT_PUSH_INTERVAL: Final = 900  # 15 minutes in seconds
+DEFAULT_ENDPOINT: Final = "https://app.bewust-renoveren.be"
 
-# Config keys
+# Ingest/provisioning API paths (appended to the configured endpoint)
+INGEST_PATH: Final = "/api/v1/sensors/ingest"
+PROVISION_PATH: Final = "/api/v1/provision/register"
+
+# Config keys (stored on the config entry)
 CONF_API_KEY: Final = "api_key"
 CONF_ENDPOINT: Final = "endpoint"
 CONF_PUSH_INTERVAL: Final = "push_interval"
+CONF_KLANT_ID: Final = "klant_id"
+CONF_WONING_ID: Final = "woning_id"
+
+# Registration form keys (used only during the config flow, not persisted)
+CONF_INSTALLER_CODE: Final = "installer_code"
+CONF_KLANT_NAAM: Final = "klant_naam"
+CONF_EMAIL: Final = "email"
+CONF_ADRES: Final = "adres"
+CONF_WONING_LABEL: Final = "woning_label"
 
 
 # Push interval options: value in seconds
 PUSH_INTERVALS: Final[list[dict[str, int | str]]] = [
     {"value": 60, "label": "1 minute"},
     {"value": 120, "label": "2 minutes"},
-    {"value": 300, "label": "5 minutes (recommended)"},
+    {"value": 300, "label": "5 minutes"},
     {"value": 600, "label": "10 minutes"},
-    {"value": 900, "label": "15 minutes"},
+    {"value": 900, "label": "15 minutes (recommended)"},
     {"value": 1800, "label": "30 minutes"},
 ]
 
@@ -147,8 +160,12 @@ SENSOR_TYPES: Final[dict[str, dict[str, Any]]] = {
 # Coordinator retry settings
 MAX_RETRIES: Final = 3
 BACKOFF_BASE: Final = 1  # seconds; exponential: 1s, 4s, 16s
-OFFLINE_BUFFER_MAX: Final = 12  # max buffered batches (~1 hour at 5min interval)
+OFFLINE_BUFFER_MAX: Final = 672  # ~7 days of buffered batches at the 15min interval
+
+# Persistent offline queue (homeassistant.helpers.storage.Store)
+STORAGE_VERSION: Final = 1
 
 # Sensor entity keys
 STATUS_SENSOR_ID: Final = "status"
 LAST_SYNC_SENSOR_ID: Final = "last_sync"
+QUEUED_SENSOR_ID: Final = "queued_batches"

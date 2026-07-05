@@ -1,8 +1,10 @@
 """Sensor platform for Bewust Renoveren.
 
-Exposes two diagnostic sensors:
+Exposes three diagnostic sensors:
   - BewustRenoverenStatusSensor: "Connected" / "Disconnected" / "Error"
   - BewustRenoverenLastSyncSensor: ISO timestamp of last successful push
+  - BewustRenoverenQueuedBatchesSensor: number of batches in the persistent
+    offline queue, awaiting drain on the next successful push
 """
 
 from __future__ import annotations
@@ -22,7 +24,12 @@ from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, LAST_SYNC_SENSOR_ID, STATUS_SENSOR_ID
+from .const import (
+    DOMAIN,
+    LAST_SYNC_SENSOR_ID,
+    QUEUED_SENSOR_ID,
+    STATUS_SENSOR_ID,
+)
 from .coordinator import BewustRenoverenCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -39,6 +46,7 @@ async def async_setup_entry(
     entities: list[SensorEntity] = [
         BewustRenoverenStatusSensor(coordinator, entry),
         BewustRenoverenLastSyncSensor(coordinator, entry),
+        BewustRenoverenQueuedBatchesSensor(coordinator, entry),
     ]
     async_add_entities(entities)
 
@@ -105,7 +113,7 @@ class BewustRenoverenStatusSensor(BewustRenoverenBaseSensor):
         data = self.coordinator.data or {}
         attrs: dict[str, Any] = {
             "error_count": data.get("error_count", 0),
-            "buffered_count": data.get("buffered_count", 0),
+            "queued_batches": data.get("queued_batches", 0),
         }
         if data.get("last_error"):
             attrs["last_error"] = data["last_error"]
@@ -157,3 +165,36 @@ class BewustRenoverenLastSyncSensor(BewustRenoverenBaseSensor):
         if self.coordinator.last_sync is not None:
             return self.coordinator.last_sync
         return None
+
+
+class BewustRenoverenQueuedBatchesSensor(BewustRenoverenBaseSensor):
+    """Sensor showing the number of batches held in the persistent offline queue."""
+
+    def __init__(
+        self,
+        coordinator: BewustRenoverenCoordinator,
+        entry: ConfigEntry,
+    ) -> None:
+        """Initialize the queued batches sensor."""
+        super().__init__(
+            coordinator,
+            entry,
+            SensorEntityDescription(
+                key=QUEUED_SENSOR_ID,
+                name="Queued Batches",
+                icon="mdi:database-clock-outline",
+                translation_key="queued_batches",
+                native_unit_of_measurement="batches",
+            ),
+        )
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self.async_write_ha_state()
+
+    @property
+    def native_value(self) -> int:
+        """Return the number of batches currently buffered on disk."""
+        data = self.coordinator.data or {}
+        return data.get("queued_batches", 0)

@@ -2,12 +2,35 @@
   "config": {
     "step": {
       "user": {
+        "title": "Bewust Renoveren instellen",
+        "description": "Hoe wil je deze Home Assistant koppelen aan Bewust Renoveren?",
+        "menu_options": {
+          "key": "Ik heb een API-sleutel",
+          "register": "Nieuwe klant registreren"
+        }
+      },
+      "key": {
         "title": "Verbinden met Bewust Renoveren",
         "description": "Voer je API-sleutel in van het Bewust Renoveren webportaal en de cloud endpoint URL.\n\nSensoren worden automatisch ontdekt -- handmatige ruimte-indeling is niet nodig.",
         "data": {
           "api_key": "API-sleutel",
           "endpoint": "Cloud Endpoint URL"
         }
+      },
+      "register": {
+        "title": "Nieuwe klant registreren",
+        "description": "Vraag je installateur naar de installateurscode. Hiermee wordt een nieuwe klant aangemaakt en automatisch een API-sleutel aangemaakt -- geen handmatige sleutel nodig.",
+        "data": {
+          "installer_code": "Installateurscode",
+          "klant_naam": "Naam klant",
+          "email": "E-mailadres",
+          "adres": "Adres",
+          "woning_label": "Woninglabel (optioneel)"
+        }
+      },
+      "register_confirm": {
+        "title": "Registratie geslaagd",
+        "description": "De klant is succesvol geregistreerd.\n\nKlant-ID: {klant_id}\nWoning-ID: {woning_id}\n\nEr werd automatisch een API-sleutel aangemaakt en opgeslagen in deze integratie. Ga verder om het verzendinterval te kiezen."
       },
       "interval": {
         "title": "Verzendinterval",
@@ -21,7 +44,13 @@
       "api_key_required": "API-sleutel is verplicht.",
       "invalid_endpoint": "Endpoint moet beginnen met https://",
       "invalid_auth": "Ongeldige API-sleutel. Controleer je sleutel en probeer opnieuw.",
-      "cannot_connect": "Kan geen verbinding maken met het endpoint. Controleer de URL en je netwerk."
+      "cannot_connect": "Kan geen verbinding maken met het endpoint. Controleer de URL en je netwerk.",
+      "installer_code_required": "Installateurscode is verplicht.",
+      "klant_naam_required": "Naam van de klant is verplicht.",
+      "email_required": "E-mailadres is verplicht.",
+      "adres_required": "Adres is verplicht.",
+      "invalid_installer_code": "Ongeldige installateurscode. Controleer de code en probeer opnieuw.",
+      "rate_limited": "Te veel registratiepogingen. Wacht even en probeer opnieuw."
     },
     "abort": {
       "already_configured": "Bewust Renoveren is al geconfigureerd."
@@ -66,6 +95,9 @@
       },
       "last_sync": {
         "name": "Laatste synchronisatie"
+      },
+      "queued_batches": {
+        "name": "Gebufferde batches"
       }
     }
   }

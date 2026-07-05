@@ -2,12 +2,35 @@
   "config": {
     "step": {
       "user": {
+        "title": "Set up Bewust Renoveren",
+        "description": "How do you want to connect this Home Assistant to Bewust Renoveren?",
+        "menu_options": {
+          "key": "I have an API key",
+          "register": "Register a new customer"
+        }
+      },
+      "key": {
         "title": "Connect to Bewust Renoveren",
         "description": "Enter your API key from the Bewust Renoveren web portal and the cloud endpoint URL.\n\nSensors will be auto-discovered -- no manual room mapping required.",
         "data": {
           "api_key": "API Key",
           "endpoint": "Cloud Endpoint URL"
         }
+      },
+      "register": {
+        "title": "Register a new customer",
+        "description": "Ask your installer for the installer code. This registers a new customer and mints an API key automatically -- no manual key entry needed.",
+        "data": {
+          "installer_code": "Installer Code",
+          "klant_naam": "Customer Name",
+          "email": "Email Address",
+          "adres": "Address",
+          "woning_label": "Home Label (optional)"
+        }
+      },
+      "register_confirm": {
+        "title": "Registration successful",
+        "description": "Customer registered successfully.\n\nCustomer ID: {klant_id}\nHome ID: {woning_id}\n\nAn API key was issued automatically and stored in this integration. Continue to select the push interval."
       },
       "interval": {
         "title": "Push Interval",
@@ -21,7 +44,13 @@
       "api_key_required": "API key is required.",
       "invalid_endpoint": "Endpoint must start with https://",
       "invalid_auth": "Invalid API key. Please check your key and try again.",
-      "cannot_connect": "Unable to connect to the endpoint. Check the URL and your network."
+      "cannot_connect": "Unable to connect to the endpoint. Check the URL and your network.",
+      "installer_code_required": "Installer code is required.",
+      "klant_naam_required": "Customer name is required.",
+      "email_required": "Email address is required.",
+      "adres_required": "Address is required.",
+      "invalid_installer_code": "Invalid installer code. Check the code and try again.",
+      "rate_limited": "Too many registration attempts. Please wait and try again."
     },
     "abort": {
       "already_configured": "Bewust Renoveren is already configured."
@@ -66,6 +95,9 @@
       },
       "last_sync": {
         "name": "Last Sync"
+      },
+      "queued_batches": {
+        "name": "Queued Batches"
       }
     }
   }
