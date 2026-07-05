@@ -40,7 +40,7 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
     Version 1 -> 3: Remove 'rooms' key, update old Cloud Run endpoint to
       the (then current) Firebase hosting URL.
     Version 3 -> 4: Update the Firebase hosting endpoint to the DGX tunnel
-      endpoint (`app.bewust-renoveren.be`); the ingest path itself is
+      endpoint (`app.bewustrenoveren.app`); the ingest path itself is
       appended at request time and does not need migrating.
     """
     new_data = dict(config_entry.data)

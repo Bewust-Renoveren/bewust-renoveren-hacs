@@ -8,7 +8,7 @@ DOMAIN: Final = "bewust_renoveren"
 
 # Defaults
 DEFAULT_PUSH_INTERVAL: Final = 900  # 15 minutes in seconds
-DEFAULT_ENDPOINT: Final = "https://app.bewust-renoveren.be"
+DEFAULT_ENDPOINT: Final = "https://app.bewustrenoveren.app"
 
 # Ingest/provisioning API paths (appended to the configured endpoint)
 INGEST_PATH: Final = "/api/v1/sensors/ingest"
